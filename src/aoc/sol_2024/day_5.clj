@@ -27,7 +27,7 @@
 
 
 (defn correctly-ordered? [get-exclusion-set update]
-    (loop [xs (seq update) banned? #{}]
+    (loop [xs (seq update), banned? #{}]
         (or
             (empty? xs)
             (let [[head & tail] xs]
@@ -46,13 +46,13 @@
 
 ;; This is basically a sorting algorithm.
 ;; It goes through every element in the update vector,
-;; And it ensures that it has no elements after it that
-;; Are in its shitlist
+;; and it ensures that it has no elements after it that
+;; are in its shitlist
 (defn fix-ordering [shitlist-of update]
     (reduce
         (fn [v i]
             (let [start (inc i)]
-                (loop [j start acc v]
+                (loop [j start, acc v]
                     (cond
                         (>= j (count acc)) acc
                         (contains? (shitlist-of (acc i)) (acc j)) (recur start (swapv acc i j))
