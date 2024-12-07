@@ -8,11 +8,10 @@
         (fn [data]
             (->> data
                 str/split-lines
-                (map
-                    (fn [line]
-                        (->> (str/split line #"\s+")
-                            (map #(Integer/parseInt %))
-                            vec)))
+                (map (fn [line]
+                    (->> (str/split line #"\s+")
+                        (map #(Integer/parseInt %))
+                        vec)))
                 (apply map vector)
                 (map sort)
                 vec))

@@ -34,10 +34,9 @@
         (fn [data]
             (->> data
                 str/split-lines
-                (map
-                    (fn [line]
-                        (->> (str/split line #"\s+")
-                            (map #(Integer/parseInt %)))))))
+                (map (fn [line]
+                    (->> (str/split line #"\s+")
+                        (map #(Integer/parseInt %)))))))
         
         "How many reports are safe?"
         (fn [reports]
