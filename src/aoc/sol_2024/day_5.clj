@@ -10,10 +10,7 @@
 ;; come after a particular number according to the rules
 (defn parse-rules [rules]
     (transduce
-        (map
-            (comp
-                (partial map #(Integer/parseInt %))
-                #(subvec % 1 3)))
+        (map (comp (partial map #(Integer/parseInt %)) #(subvec % 1 3)))
         (completing (fn ([rules [before after]]
             (update rules after (fn [exclusion-set]
                 (if (some? exclusion-set)
@@ -43,6 +40,27 @@
     (nth coll (quot (count coll) 2)))
 
 
+(defn swapv [v i j]
+    (assoc v i (v j), j (v i)))
+
+
+;; This is basically a sorting algorithm.
+;; It goes through every element in the update vector,
+;; And it ensures that it has no elements after it that
+;; Are in its shitlist
+(defn fix-ordering [shitlist-of update]
+    (reduce
+        (fn [v i]
+            (let [start (inc i)]
+                (loop [j start acc v]
+                    (cond
+                        (>= j (count acc)) acc
+                        (contains? (shitlist-of (acc i)) (acc j)) (recur start (swapv acc i j))
+                        :else (recur (inc j) acc)))))
+        update
+        (range (dec (count update)))))
+
+
 (defn -main []
     (aoc/puzzle 2024 5
         (fn [data]
@@ -55,6 +73,16 @@
                 (comp
                     (filter #(correctly-ordered? rules %))
                     (map get-middle))
+                +
+                0
+                updates))
+                
+        "The sum of the middle numbers of the incorrectly-ordered updates, when correctly ordered"
+        (fn [[rules updates]]
+            (transduce
+                (comp
+                    (remove #(correctly-ordered? rules %))
+                    (map #(get-middle (fix-ordering rules %))))
                 +
                 0
                 updates))))
